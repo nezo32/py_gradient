@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 def f(x, y) -> float:
-    return np.sin(x / (np.abs(x - y) + 1)) + np.cos(y / (np.abs(y - x) + 1))
+    return (x**2 + 5) * (y**2 + 12)
 
 
 def dfdx(x, y, ex):
@@ -19,14 +19,15 @@ def rand(min, max):
     return np.random.rand() * (max - min) + min
 
 
-min = -10
-max = 10
+iter = 100000
+
+min = -50
+max = 50
 
 ex = 0.1
 ey = 0.1
-gamma = 0.95
 
-border = 2000
+border = 5000
 
 x = 0
 y = 0
@@ -35,8 +36,8 @@ x_min = 0
 y_min = 0
 f_min = f(x_min, y_min)
 
-plt_x = np.arange(min, max, 0.1)
-plt_y = np.arange(min, max, 0.1)
+plt_x = np.arange(-100, 100, 0.1)
+plt_y = np.arange(-100, 100, 0.1)
 
 xgrid, ygrid = np.meshgrid(plt_x, plt_y)
 zgrid = f(xgrid, ygrid)
@@ -55,24 +56,25 @@ plt.show(block=False)
 start = datetime.now()
 
 for j in range(10):
-    x = rand(min, max)
-    y = rand(min, max)
+    x = rand(min, max + 1)
+    y = rand(min, max + 1)
 
     ax.scatter(x, y, f(x, y), c='red')
 
-    for i in range(10000):
+    for i in range(iter):
         x -= ex * np.sign(dfdx(x, y, ex))
         y -= ey * np.sign(dfdy(x, y, ey))
         ex = 1 / np.min([i + 1, border])
         ey = 1 / np.min([i + 1, border])
 
-        if i % 1000 == 0:
+        if i % (iter // 5) == 0:
             ax.scatter(x, y, f(x, y), c='blue')
 
             fig.canvas.draw()
             fig.canvas.flush_events()
+            
 
-    ax.scatter(x, y, f(x, y), c='blue')
+    ax.scatter(x, y, f(x, y), c='green')
 
     z = f(x, y)
     if (z < f_min):
